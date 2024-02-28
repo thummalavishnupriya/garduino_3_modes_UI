@@ -33,15 +33,7 @@ void setup() {
   // Retrieve and apply the saved motor speed level
   speedPercentage = preferences.getInt("speed", 50);
   ledcWrite(motorChannel, map(speedPercentage, 0, 100, 0, 255));
-  
-  // Handle root URL by sending HTML response
-  server.on("/", HTTP_GET, []()) {
-    if (server.hasArg("speed")) {
-      speedPercentage = server.arg("speed").toInt();
-      preferences.putInt("speed", speedPercentage);
-      ledcWrite(motorChannel, map(speedPercentage, 0, 100, 0, 255));
-    }
-    
+
   // Define web server root route
   server.on("/", HTTP_GET, []() {
     server.send(200, "text/html", R"rawliteral(
@@ -128,8 +120,7 @@ void setup() {
   <!-- Gardening Auto Mode -->
   <div id="gardeningAutoMode" class="mode">
     <h2>Gardening Auto Mode</h2>
-    Motor Speed (%): <input type='range' name='speed' min='0' max='100' value='" + String(speedPercentage) + "' onchange='this.form.submit()' />
-    // "Speed (%): <input type='range' name='speed' min='0' max='100' value='" + String(speedPercentage) + "' onchange='this.form.submit()' />"
+    Motor Speed (%): <input type="range" min="30" max="100" value="30" id="autoMotorSpeed"><br>
     Trigger Limit (%): <input type="range" min="30" max="100" value="30" id="autoTriggerLimit"><br>
     <button onclick="activateMode('gardeningAutoMode')">Activate Gardening Auto Mode</button>
   </div>
@@ -190,6 +181,7 @@ switchMode('gardeningAutoMode');
 </html>
 )rawliteral");
   });
+
   server.begin();
 }
 
